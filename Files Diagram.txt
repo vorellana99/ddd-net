@@ -1,0 +1,52 @@
+graph TD
+    %% Definición de capas
+    subgraph Layer_WebApi ["WebApi Layer"]
+        direction LR
+        F1["Controllers/ProductsController.cs"]
+        F2["Program.cs (Configuración y DI)"]
+    end
+    subgraph Layer_Application ["Application Layer"]
+        direction LR
+        F3["Interfaces/IProductService.cs (Caso de Uso - Interfaz)"]
+        F4["Services/ProductService.cs (Caso de Uso - Implementación)"]
+        F5["DTOs/ProductDto.cs <br/> (DTOs: ProductDto, CreateProductDto, UpdateProductDto)"]
+    end
+    subgraph Layer_Infrastructure ["Infrastructure Layer"]
+        direction LR
+        F8["Repositories/ProductRepository.cs (Implementación Repositorio)"]
+        F9["Data/ApplicationDbContext.cs (EF Core Context)"]
+    end
+    subgraph Layer_Domain ["Domain Layer"]
+        direction LR
+        F10["Interfaces/IProductRepository.cs (Abstracción Repositorio)"]
+        F11["Entities/Product.cs (Entidad/Raíz de Agregado)"]
+    end
+    
+    %% Dependencias / Relaciones
+    F1 --> |"Inyecta y usa"| F3
+    F4 --> |"Implementa"| F3
+    F4 --> |"Inyecta y usa"| F10
+    F4 --> |"Crea/Usa/Mapea"| F5
+    F4 --> |"Crea/Usa/Manipula"| F11
+    F3 --> |"Define contrato con"| F5
+    F8 --> |"Implementa"| F10
+    F8 --> |"Inyecta y usa"| F9
+    F8 --> |"Opera sobre"| F11
+    F9 --> |"Define DbSet para"| F11
+    F10 --> |"Define contrato con"| F11
+    F2 --> |"Registra (DI)"| F3
+    F2 --> |"Registra (DI)"| F4
+    F2 --> |"Registra (DI)"| F8
+    F2 --> |"Registra (DI)"| F9
+    F2 --> |"Registra (DI)"| F10
+    
+    %% Estilo para las capas
+    classDef webApiStyle fill:#f9f,stroke:#333,stroke-width:2px
+    classDef applicationStyle fill:#ccf,stroke:#333,stroke-width:2px
+    classDef infrastructureStyle fill:#ffc,stroke:#333,stroke-width:2px
+    classDef domainStyle fill:#cfc,stroke:#333,stroke-width:2px
+    
+    class Layer_WebApi webApiStyle
+    class Layer_Application applicationStyle
+    class Layer_Infrastructure infrastructureStyle
+    class Layer_Domain domainStyle
